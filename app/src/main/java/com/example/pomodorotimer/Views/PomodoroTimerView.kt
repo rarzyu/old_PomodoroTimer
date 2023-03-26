@@ -16,18 +16,6 @@ import com.example.pomodorotimer.ViewModels.PomodoroViewModel
 import com.example.pomodorotimer.ViewModels.TimerState
 import java.util.concurrent.TimeUnit
 
-
-//class PomodoroTimerView : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            val context = LocalContext.current
-//            val viewModel = ViewModelProvider(this).get(PomodoroViewModel::class.java)
-//            PomodoroScreen(viewModel)
-//        }
-//    }
-//}
-
 @Composable
 fun PomodoroScreen(viewModel: PomodoroViewModel) {
     val timeLeft by viewModel.timeLeft.collectAsState()

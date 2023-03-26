@@ -6,13 +6,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.example.pomodorotimer.ViewModels.HeaderViewModel
 
 @Composable
-fun HeaderView(viewModel : HeaderViewModel) {
+fun HeaderView(title : String) {
     TopAppBar {
         Text(
-            text = viewModel.headerTitle,
+            text = title,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
