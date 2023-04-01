@@ -17,7 +17,7 @@ import com.example.pomodorotimer.ViewModels.TimerState
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun PomodoroScreen(viewModel: PomodoroViewModel) {
+fun PomodoroView(viewModel: PomodoroViewModel) {
     val timeLeft by viewModel.timeLeft.collectAsState()
     val timerState by viewModel.timerState.collectAsState()
     val navController = rememberNavController()
@@ -63,7 +63,7 @@ fun PomodoroScreen(viewModel: PomodoroViewModel) {
 @Composable
 fun DefaultPreview() {
     val dummyViewModel = PomodoroViewModel()
-    PomodoroScreen(viewModel = dummyViewModel)
+    PomodoroView(viewModel = dummyViewModel)
 }
 
 private fun formatTime(millis: Long): String {
