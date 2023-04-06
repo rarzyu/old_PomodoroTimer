@@ -1,12 +1,14 @@
 package com.example.pomodorotimer.Views
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -55,26 +57,58 @@ fun SettingView(viewModel: SettingViewModel) {
 
 @Composable
 fun NumberPickerView(label: String, initialValue: Int, range: IntRange, onValueChange: (Int) -> Unit) {
-    var pickerValue by remember { mutableStateOf(initialValue) }
-
-    Column {
+    Row(
+        modifier = Modifier.padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(label)
 
-        Row {
-            Button(
-                onClick = { if (pickerValue > range.first) pickerValue -= 1 },
-                enabled = pickerValue > range.first
-            ) {
-                Text("-")
-            }
+        Spacer(modifier = Modifier.width(8.dp))
 
-            Text(pickerValue.toString())
-
-            Button(
-                onClick = { if (pickerValue < range.last) pickerValue += 1 },
-                enabled = pickerValue < range.last
+        Card(
+            modifier = Modifier
+                .width(200.dp)
+                .height(48.dp),
+            elevation = 4.dp
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("+")
+                val textFieldValue = remember { mutableStateOf(initialValue) }
+
+                TextField(
+                    value = textFieldValue.value.toString(),
+                    modifier = Modifier.weight(1f),
+                    onValueChange = { textFieldValue.value = it.toInt() },
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = {
+                        if (textFieldValue.value > range.first) {
+                            textFieldValue.value = textFieldValue.value + 1
+                        }
+                    },
+                    enabled = textFieldValue.value > range.first
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "増やす")
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick ={
+                        if (textFieldValue.value > range.first) {
+                            textFieldValue.value = textFieldValue.value - 1
+                        }
+                    },
+                    enabled = textFieldValue.value > range.first
+                ){
+                    Icon(Icons.Default.Remove, contentDescription = "減らす")
+                }
             }
         }
     }
