@@ -15,13 +15,13 @@ class SettingViewModel(private val settingDataModel: SettingDataModel) : ViewMod
     val timerAlertKey = "timerAlert"
 
     //各設定の値
-    val workTime = settingDataModel.getWorkTime()
-    val shortBreakTime = settingDataModel.getShortBreakTime()
-    val longBreakTime = settingDataModel.getLongBreakTime()
-    val numberOfWorkBreakSets = settingDataModel.getNumberOfWorkBreakSets()
-    val numberOfAllSets = settingDataModel.getNumberOfAllSets()
-    val timerVibration = settingDataModel.getTimerVibration()
-    val timerAlert = settingDataModel.getTimerAlert()
+    var workTime = settingDataModel.getWorkTime()
+    var shortBreakTime = settingDataModel.getShortBreakTime()
+    var longBreakTime = settingDataModel.getLongBreakTime()
+    var numberOfWorkBreakSets = settingDataModel.getNumberOfWorkBreakSets()
+    var numberOfAllSets = settingDataModel.getNumberOfAllSets()
+    var timerVibration = settingDataModel.getTimerVibration()
+    var timerAlert = settingDataModel.getTimerAlert()
 
     //保存処理
     fun saveSetting(saveData:Map<String,Any>){

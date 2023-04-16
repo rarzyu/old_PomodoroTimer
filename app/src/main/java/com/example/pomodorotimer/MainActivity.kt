@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pomodorotimer.Models.SettingDataModel
 import com.example.pomodorotimer.ViewModels.HelpViewModel
@@ -22,13 +23,13 @@ import com.example.pomodorotimer.Views.*
 
 
 class MainActivity : ComponentActivity() {
-    val settingDataModel by lazy { SettingDataModel(applicationContext) }
-    val settingViewModel by viewModels<SettingViewModel> { ViewModelFactory(settingDataModel) }
+    private val settingDataModel by lazy { SettingDataModel(applicationContext) }
+    private val settingViewModel by viewModels<SettingViewModel> { ViewModelFactory(settingDataModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PomodoroApp {
+            PomodoroApp(settingViewModel) {
                 SettingView(settingViewModel)
             }
         }
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PomodoroApp(content: @Composable () -> Unit) {
+fun PomodoroApp(settingViewModel: SettingViewModel,content: @Composable () -> Unit) {
     val (selectedTab, setSelectedTab) = remember { mutableStateOf(0) }
     Column(Modifier.fillMaxSize()) {
         //ヘッダー
@@ -52,7 +53,7 @@ fun PomodoroApp(content: @Composable () -> Unit) {
         Box(Modifier.weight(1f)) {
             when (selectedTab) {
                 0 -> PomodoroView(viewModel = PomodoroViewModel())
-                1 -> SettingView(viewModel = SettingViewModel(MainActivity().settingDataModel))
+                1 -> SettingView(viewModel = settingViewModel)
                 2 -> HelpView(viewModel = HelpViewModel())
             }
         }
@@ -66,7 +67,13 @@ fun PomodoroApp(content: @Composable () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun MainActivityPreview() {
-    PomodoroApp {
+    val context = LocalContext.current
+    // ダミーのSettingDataModelとSettingViewModelを作成
+    val dummySettingDataModel = remember { SettingDataModel(context) }
+    val dummySettingViewModel = remember { SettingViewModel(dummySettingDataModel) }
+
+    // ダミーのSettingViewModelを渡す
+    PomodoroApp(settingViewModel = dummySettingViewModel) {
 
     }
 }

@@ -12,7 +12,9 @@ class ViewModelFactory(private val settingDataModel: SettingDataModel) : ViewMod
             modelClass.isAssignableFrom(SettingViewModel::class.java) -> {
                 SettingViewModel(settingDataModel) as T
             }
-            else -> throw IllegalArgumentException("ViewModelClassが見つかりません")
+            else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }
+
+

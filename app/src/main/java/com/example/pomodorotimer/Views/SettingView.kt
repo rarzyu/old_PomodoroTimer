@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.pomodorotimer.ViewModels.SettingViewModel
@@ -35,55 +34,55 @@ fun SettingView(viewModel: SettingViewModel) {
 
             NumberPickerView(
                 label = "作業時間",
-                initialValue = viewModel.workTime.value,
+                initialValue = viewModel.workTime,
                 range = 1..120,
-                onValueChange = { viewModel.workTime.value = it },
+                onValueChange = { viewModel.workTime = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             NumberPickerView(
                 label = "休憩時間",
-                initialValue = viewModel.shortBreakTime.value,
+                initialValue = viewModel.shortBreakTime,
                 range = 1..60,
-                onValueChange = { viewModel.shortBreakTime.value = it },
+                onValueChange = { viewModel.shortBreakTime = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             NumberPickerView(
                 label = "休憩時間（長）",
-                initialValue = viewModel.longBreakTime.value,
+                initialValue = viewModel.longBreakTime,
                 range = 1..180,
-                onValueChange = { viewModel.longBreakTime.value = it },
+                onValueChange = { viewModel.longBreakTime = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             NumberPickerView(
                 label = "作業と休憩のセット数",
-                initialValue = viewModel.numberOfWorkBreakSets.value,
+                initialValue = viewModel.numberOfWorkBreakSets,
                 range = 1..20,
-                onValueChange = { viewModel.numberOfWorkBreakSets.value = it },
+                onValueChange = { viewModel.numberOfWorkBreakSets = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             NumberPickerView(
                 label = "全てのセット数",
-                initialValue = viewModel.numberOfAllSets.value,
+                initialValue = viewModel.numberOfAllSets,
                 range = 1..20,
-                onValueChange = { viewModel.numberOfAllSets.value = it },
+                onValueChange = { viewModel.numberOfAllSets = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             SwitchView(
                 label = "タイマー終了時のバイブ",
-                isChecked = viewModel.timerVibration.value,
-                onCheckedChange = { viewModel.timerVibration.value = it },
+                isChecked = viewModel.timerVibration,
+                onCheckedChange = { viewModel.timerVibration = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             SwitchView(
                 label = "タイマー終了時のアラート",
-                isChecked = viewModel.timerAlert.value,
-                onCheckedChange = { viewModel.timerAlert.value = it },
+                isChecked = viewModel.timerAlert,
+                onCheckedChange = { viewModel.timerAlert = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -179,12 +178,6 @@ fun SwitchView(
         Spacer(modifier = Modifier.weight(1f))
         Switch(checked = isChecked, onCheckedChange = onCheckedChange)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun previewSettingView() {
-    SettingView(viewModel = SettingViewModel())
 }
 
 fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
