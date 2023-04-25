@@ -74,15 +74,15 @@ fun SettingView(viewModel: SettingViewModel) {
             )
             SwitchView(
                 label = "タイマー終了時のバイブ",
-                isChecked = viewModel.timerVibration,
-                onCheckedChange = { viewModel.timerVibration = it },
+                isChecked = viewModel.isTimerVibration,
+                onCheckedChange = { viewModel.setIsTimerVibration(it) },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             SwitchView(
                 label = "タイマー終了時のアラート",
-                isChecked = viewModel.timerAlert,
-                onCheckedChange = { viewModel.timerAlert = it },
+                isChecked = viewModel.isTimerAlert,
+                onCheckedChange = { viewModel.setIsTimerAlert(it) },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -117,7 +117,11 @@ fun NumberPickerView(
 
         TextField(
             value = textFieldValue.value.toString(),
-            onValueChange = { textFieldValue.value = it.toInt() },
+            onValueChange = {
+                val intValue = it.toInt()
+                textFieldValue.value = intValue
+                onValueChange(intValue)
+            },
             singleLine = true,
             modifier = Modifier
                 .weight(1f)
@@ -125,14 +129,14 @@ fun NumberPickerView(
             textStyle = TextStyle.Default.copy(textAlign = TextAlign.End)
         )
 
-
         IconButton(
             onClick = {
-                if (textFieldValue.value > range.first) {
+                if (textFieldValue.value + 1 <= range.last) {
                     textFieldValue.value = textFieldValue.value + 1
+                    onValueChange(textFieldValue.value)
                 }
             },
-            enabled = textFieldValue.value > range.first,
+            enabled = textFieldValue.value + 1 <= range.last,
             modifier = Modifier
                 .heightIn(min = componentHeight, max = componentHeight)
         ) {
@@ -141,11 +145,12 @@ fun NumberPickerView(
 
         IconButton(
             onClick = {
-                if (textFieldValue.value > range.first) {
+                if (textFieldValue.value - 1 >= range.first) {
                     textFieldValue.value = textFieldValue.value - 1
+                    onValueChange(textFieldValue.value)
                 }
             },
-            enabled = textFieldValue.value > range.first,
+            enabled = textFieldValue.value - 1 >= range.first,
             modifier = Modifier
                 .heightIn(min = componentHeight, max = componentHeight)
         ) {
@@ -176,7 +181,13 @@ fun SwitchView(
             modifier = Modifier.width(labelWidth)
         )
         Spacer(modifier = Modifier.weight(1f))
-        Switch(checked = isChecked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = isChecked,
+            onCheckedChange = { isChecked ->
+                onCheckedChange(isChecked)
+            }
+        )
+
     }
 }
 
@@ -187,12 +198,12 @@ fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
 
         Modifier.drawBehind {
             val width = size.width
-            val height = size.height - strokeWidthPx/2
+            val height = size.height - strokeWidthPx / 2
 
             drawLine(
                 color = color,
                 start = Offset(x = 0f, y = height),
-                end = Offset(x = width , y = height),
+                end = Offset(x = width, y = height),
                 strokeWidth = strokeWidthPx
             )
         }

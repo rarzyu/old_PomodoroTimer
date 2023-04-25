@@ -4,7 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.pomodorotimer.Models.SettingDataModel
 
-class ViewModelFactory(private val settingDataModel: SettingDataModel) : ViewModelProvider.Factory {
+/**
+ * シングルトンクラス
+ * SettingDataModelとSettingViewModelの架け橋
+ */
+class ViewModelFactory private constructor(private val settingDataModel: SettingDataModel) :
+    ViewModelProvider.Factory {
+
+    companion object {
+        private var instance: ViewModelFactory? = null
+
+        fun getInstance(settingDataModel: SettingDataModel): ViewModelFactory {
+            if (instance == null) {
+                instance = ViewModelFactory(settingDataModel)
+            }
+            return instance!!
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -16,5 +32,6 @@ class ViewModelFactory(private val settingDataModel: SettingDataModel) : ViewMod
         }
     }
 }
+
 
 

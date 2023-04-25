@@ -2,29 +2,56 @@ package com.example.pomodorotimer.Models
 
 import android.content.Context
 
+/**
+ * 設定のデータ管理
+ * SharedPreferencesとやり取りする
+ */
 class SettingDataModel(private val context: Context) {
     private val sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
+    //各設定のKey値
+    val workTimeKey = "workTime"
+    val shortBreakTimeKey = "shortBreakTime"
+    val longBreakTimeKey = "longBreakTime"
+    val numberOfWorkBreakSetsKey = "numberOfWorkBreakSets"
+    val numberOfAllSetsKey = "numberOfAllSets"
+    val isTimerVibrationKey = "isTimerVibration"
+    val isTimerAlertKey = "isTimerAlert"
+
     //作業時間
-    fun getWorkTime(): Int = sharedPreferences.getInt("workTime", 25)
+    fun getWorkTime():Int {
+      return sharedPreferences.getInt(workTimeKey, 25)
+    }
 
     //休憩時間
-    fun getShortBreakTime(): Int = sharedPreferences.getInt("shortBreakTime",5)
+    fun getShortBreakTime():Int {
+        return sharedPreferences.getInt(shortBreakTimeKey,5)
+    }
 
     //休憩時間（長）
-    fun getLongBreakTime():Int = sharedPreferences.getInt("longBreakTime",30)
+    fun getLongBreakTime():Int {
+        return sharedPreferences.getInt(longBreakTimeKey,30)
+    }
 
     //作業と休憩のセット数
-    fun getNumberOfWorkBreakSets():Int = sharedPreferences.getInt("numberOfWorkBreakSets",4)
+    fun getNumberOfWorkBreakSets():Int {
+        return sharedPreferences.getInt(numberOfWorkBreakSetsKey,4)
+    }
 
     //全てのセット数
-    fun getNumberOfAllSets():Int = sharedPreferences.getInt("numberOfAllSets",3)
+    fun getNumberOfAllSets():Int {
+        return sharedPreferences.getInt(numberOfAllSetsKey,3)
+    }
 
     //タイマー終了時のバイブ
-    fun getTimerVibration():Boolean = sharedPreferences.getBoolean("timerVibration",true)
+    fun getTimerVibration():Boolean {
+        return sharedPreferences.getBoolean(isTimerVibrationKey,true)
+    }
 
     //タイマー終了時のアラート
-    fun getTimerAlert():Boolean = sharedPreferences.getBoolean("timerAlert",true)
+    fun getTimerAlert():Boolean {
+        return sharedPreferences.getBoolean(isTimerAlertKey,true)
+    }
 
     /**
      * SharedPreferencesに保存する処理：Int型

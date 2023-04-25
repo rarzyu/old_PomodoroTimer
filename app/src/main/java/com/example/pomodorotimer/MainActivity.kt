@@ -24,7 +24,11 @@ import com.example.pomodorotimer.Views.*
 
 class MainActivity : ComponentActivity() {
     private val settingDataModel by lazy { SettingDataModel(applicationContext) }
-    private val settingViewModel by viewModels<SettingViewModel> { ViewModelFactory(settingDataModel) }
+    private val viewModelFactory by lazy { ViewModelFactory.getInstance(settingDataModel) }
+    private val settingViewModel by viewModels<SettingViewModel> { viewModelFactory }
+
+//    private val settingDataModel by lazy { SettingDataModel(applicationContext) }
+//    private val settingViewModel by viewModels<SettingViewModel> { ViewModelFactory.getInstance(settingDataModel) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +72,10 @@ fun PomodoroApp(settingViewModel: SettingViewModel,content: @Composable () -> Un
 @Composable
 fun MainActivityPreview() {
     val context = LocalContext.current
-    // ダミーのSettingDataModelとSettingViewModelを作成
-    val dummySettingDataModel = remember { SettingDataModel(context) }
-    val dummySettingViewModel = remember { SettingViewModel(dummySettingDataModel) }
-
-    // ダミーのSettingViewModelを渡す
-    PomodoroApp(settingViewModel = dummySettingViewModel) {
-
+    val settingDataModel = remember { SettingDataModel(context) }
+    val viewModelFactory = ViewModelFactory.getInstance(settingDataModel)
+    val settingViewModel = viewModelFactory.create(SettingViewModel::class.java)
+    PomodoroApp(settingViewModel) {
+        SettingView(settingViewModel)
     }
 }
