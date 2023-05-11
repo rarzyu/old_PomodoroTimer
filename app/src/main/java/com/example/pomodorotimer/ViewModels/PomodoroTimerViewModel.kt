@@ -6,10 +6,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PomodoroViewModel : ViewModel() {
-    private val workDuration = 25 * 60 * 1000L // 25分
-    private val breakDuration = 5 * 60 * 1000L // 5分
-    private val timer = TimerState(workDuration, breakDuration)
+class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel) : ViewModel() {
+    private val workDuration = settingViewModel.workTime * 60 * 1000L
+    private val breakDuration = settingViewModel.shortBreakTime * 60 * 1000L
+    private val longBreakDuration = settingViewModel.longBreakTime * 60 * 1000L
+    private val workBreakSetCount = settingViewModel.numberOfWorkBreakSets
+    private val totalSetCount = settingViewModel.numberOfAllSets
+    private val timer = TimerState(workDuration, breakDuration,longBreakDuration,workBreakSetCount,totalSetCount)
 
     private val _timerState = MutableStateFlow(TimerState.TimerState.STOPPED)
     val timerState: StateFlow<TimerState.TimerState> = _timerState

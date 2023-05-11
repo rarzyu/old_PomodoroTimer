@@ -14,11 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pomodorotimer.Models.SettingDataModel
-import com.example.pomodorotimer.ViewModels.HelpViewModel
-import com.example.pomodorotimer.ViewModels.PomodoroViewModel
+import com.example.pomodorotimer.ViewModels.PomodoroTimerViewModel
 import com.example.pomodorotimer.ViewModels.SettingViewModel
 import com.example.pomodorotimer.ViewModels.ViewModelFactory
-import com.example.pomodorotimer.Views.*
+import com.example.pomodorotimer.Views.FooterView
+import com.example.pomodorotimer.Views.HeaderView
+import com.example.pomodorotimer.Views.PomodoroView
+import com.example.pomodorotimer.Views.SettingView
 
 
 
@@ -35,6 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PomodoroApp(settingViewModel) {
                 SettingView(settingViewModel)
+                PomodoroTimerViewModel(settingViewModel)
             }
         }
     }
@@ -56,9 +59,9 @@ fun PomodoroApp(settingViewModel: SettingViewModel,content: @Composable () -> Un
         //メイン
         Box(Modifier.weight(1f)) {
             when (selectedTab) {
-                0 -> PomodoroView(viewModel = PomodoroViewModel())
+                0 -> PomodoroView(viewModel = PomodoroTimerViewModel(settingViewModel))
                 1 -> SettingView(viewModel = settingViewModel)
-                2 -> HelpView(viewModel = HelpViewModel())
+//                2 -> HelpView(viewModel = HelpViewModel())
             }
         }
 
@@ -77,5 +80,6 @@ fun MainActivityPreview() {
     val settingViewModel = viewModelFactory.create(SettingViewModel::class.java)
     PomodoroApp(settingViewModel) {
         SettingView(settingViewModel)
+        PomodoroTimerViewModel(settingViewModel)
     }
 }

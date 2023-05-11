@@ -8,19 +8,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
-import com.example.pomodorotimer.ViewModels.PomodoroViewModel
+import com.example.pomodorotimer.ViewModels.PomodoroTimerViewModel
 import com.example.pomodorotimer.ViewModels.TimerState
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun PomodoroView(viewModel: PomodoroViewModel) {
+fun PomodoroView(viewModel: PomodoroTimerViewModel) {
     val timeLeft by viewModel.timeLeft.collectAsState()
     val timerState by viewModel.timerState.collectAsState()
-    val navController = rememberNavController()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -28,6 +25,13 @@ fun PomodoroView(viewModel: PomodoroViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = timerState.toString(),
+                fontSize = 50.sp
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             Text(
                 text = formatTime(timeLeft),
                 fontSize = 48.sp
@@ -37,20 +41,34 @@ fun PomodoroView(viewModel: PomodoroViewModel) {
 
             Row {
                 when (timerState) {
+                    //停止状態
                     TimerState.TimerState.STOPPED -> {
                         Button(onClick = { viewModel.start() }) {
-                            Text("Start")
+                            Text("スタート")
                         }
                     }
-                    TimerState.TimerState.WORKING, TimerState.TimerState.BREAK -> {
-                        Button(onClick = { viewModel.pause() }) {
-                            Text("Pause")
+                    //一時停止状態
+                    TimerState.TimerState.PAUSE -> {
+                        Button(onClick = { viewModel.resume() }) {
+                            Text("再開")
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Button(onClick = { viewModel.reset() }) {
-                            Text("Reset")
+                            Text("リセット")
+                        }
+                    }
+                    //動作中（作業・休憩問わず）
+                    TimerState.TimerState.WORKING, TimerState.TimerState.BREAK, TimerState.TimerState.LONG_BREAK -> {
+                        Button(onClick = { viewModel.pause() }) {
+                            Text("一時停止")
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(onClick = { viewModel.reset() }) {
+                            Text("リセット")
                         }
                     }
                 }
@@ -58,14 +76,6 @@ fun PomodoroView(viewModel: PomodoroViewModel) {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    val dummyViewModel = PomodoroViewModel()
-    PomodoroView(viewModel = dummyViewModel)
-}
-
 private fun formatTime(millis: Long): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(millis)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
