@@ -12,8 +12,8 @@ class SettingViewModel(private val settingDataModel: SettingDataModel) : ViewMod
     private val workTimeKey = settingDataModel.workTimeKey
     private val shortBreakTimeKey = settingDataModel.shortBreakTimeKey
     private val longBreakTimeKey = settingDataModel.longBreakTimeKey
-    private val numberOfWorkBreakSetsKey = settingDataModel.numberOfWorkBreakSetsKey
-    private val numberOfAllSetsKey = settingDataModel.numberOfAllSetsKey
+    private val workBreakSetCountKey = settingDataModel.workBreakSetCountKey
+    private val totalSetCountKey = settingDataModel.totalSetCountKey
     private val isTimerVibrationKey = settingDataModel.isTimerVibrationKey
     private val isTimerAlertKey = settingDataModel.isTimerAlertKey
 
@@ -33,15 +33,15 @@ class SettingViewModel(private val settingDataModel: SettingDataModel) : ViewMod
             field = value
             settingDataModel.setSettingInt(longBreakTimeKey, value)
         }
-    var numberOfWorkBreakSets = settingDataModel.getNumberOfWorkBreakSets()
+    var workBreakSetCount = settingDataModel.getWorkBreakSetCount()
         set(value) {
             field = value
-            settingDataModel.setSettingInt(numberOfWorkBreakSetsKey, value)
+            settingDataModel.setSettingInt(workBreakSetCountKey, value)
         }
-    var numberOfAllSets = settingDataModel.getNumberOfAllSets()
+    var totalSetCount = settingDataModel.getTotalSetCount()
         set(value) {
             field = value
-            settingDataModel.setSettingInt(numberOfAllSetsKey, value)
+            settingDataModel.setSettingInt(totalSetCountKey, value)
         }
     private var _isTimerVibration = mutableStateOf(settingDataModel.getTimerVibration())
     val isTimerVibration: Boolean

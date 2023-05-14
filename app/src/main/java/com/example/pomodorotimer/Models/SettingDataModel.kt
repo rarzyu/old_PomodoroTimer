@@ -13,8 +13,8 @@ class SettingDataModel(private val context: Context) {
     val workTimeKey = "workTime"
     val shortBreakTimeKey = "shortBreakTime"
     val longBreakTimeKey = "longBreakTime"
-    val numberOfWorkBreakSetsKey = "numberOfWorkBreakSets"
-    val numberOfAllSetsKey = "numberOfAllSets"
+    val workBreakSetCountKey = "workBreakSetCount"
+    val totalSetCountKey = "totalSetCount"
     val isTimerVibrationKey = "isTimerVibration"
     val isTimerAlertKey = "isTimerAlert"
 
@@ -34,13 +34,13 @@ class SettingDataModel(private val context: Context) {
     }
 
     //作業と休憩のセット数
-    fun getNumberOfWorkBreakSets():Int {
-        return sharedPreferences.getInt(numberOfWorkBreakSetsKey,4)
+    fun getWorkBreakSetCount():Int {
+        return sharedPreferences.getInt(workBreakSetCountKey,4)
     }
 
     //全てのセット数
-    fun getNumberOfAllSets():Int {
-        return sharedPreferences.getInt(numberOfAllSetsKey,3)
+    fun getTotalSetCount():Int {
+        return sharedPreferences.getInt(totalSetCountKey,3)
     }
 
     //タイマー終了時のバイブ

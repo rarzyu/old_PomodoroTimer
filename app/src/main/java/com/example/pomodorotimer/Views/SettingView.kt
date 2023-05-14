@@ -58,17 +58,17 @@ fun SettingView(viewModel: SettingViewModel) {
             )
             NumberPickerView(
                 label = "作業と休憩のセット数",
-                initialValue = viewModel.numberOfWorkBreakSets,
+                initialValue = viewModel.workBreakSetCount,
                 range = 1..20,
-                onValueChange = { viewModel.numberOfWorkBreakSets = it },
+                onValueChange = { viewModel.workBreakSetCount = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             NumberPickerView(
                 label = "全てのセット数",
-                initialValue = viewModel.numberOfAllSets,
+                initialValue = viewModel.totalSetCount,
                 range = 1..20,
-                onValueChange = { viewModel.numberOfAllSets = it },
+                onValueChange = { viewModel.totalSetCount = it },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
