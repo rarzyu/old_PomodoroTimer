@@ -2,11 +2,12 @@ package com.example.pomodorotimer.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pomodorotimer.Common.NotificationController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel) : ViewModel() {
+class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notificationController: NotificationController) : ViewModel() {
 
     //ViewModelを変数に
     private val workTime = settingViewModel.workTime * 60 * 1000L
@@ -25,7 +26,8 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel) : Vi
         workBreakSetCount,
         totalSetCount,
         isTimerVibration,
-        isTimerAlert
+        isTimerAlert,
+        notificationController
     )
 
     private val _timerState = MutableStateFlow(TimerState.TimerState.STOPPED)

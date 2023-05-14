@@ -1,5 +1,6 @@
 package com.example.pomodorotimer.ViewModels
 
+import com.example.pomodorotimer.Common.NotificationController
 import kotlinx.coroutines.*
 
 /**
@@ -12,7 +13,8 @@ class TimerState(
     private val workBreakSetCount: Int,
     private val totalSetCount: Int,
     private val isTimerVibration: Boolean,
-    private val isTimerAlert: Boolean
+    private val isTimerAlert: Boolean,
+    private val notificationController: NotificationController
 ) {
     //ローカル変数
     private var currentJob: Job? = null
@@ -71,12 +73,24 @@ class TimerState(
             val startTime = System.currentTimeMillis()
             val endTime = startTime + duration
 
+            //タイマー処理
             while (System.currentTimeMillis() < endTime) {
                 timeLeft = endTime - System.currentTimeMillis()
                 onTick?.invoke(timeLeft)
                 delay(1000)
             }
 
+            //タイマーが終了した際の処理
+            //バイブ
+            if (isTimerVibration) {
+                notificationController.vibrate()
+            }
+            //アラート
+            if (isTimerAlert) {
+                notificationController.playNotificationSound()
+            }
+
+            //次のタイマーの設定
             when (state) {
                 TimerState.WORKING -> {
                     currentSet++

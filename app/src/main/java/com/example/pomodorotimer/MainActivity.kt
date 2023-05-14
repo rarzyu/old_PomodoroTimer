@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.pomodorotimer.Common.DummyNotificationController
+import com.example.pomodorotimer.Common.NotificationController
 import com.example.pomodorotimer.Models.SettingDataModel
 import com.example.pomodorotimer.ViewModels.PomodoroTimerViewModel
 import com.example.pomodorotimer.ViewModels.SettingViewModel
@@ -22,29 +24,28 @@ import com.example.pomodorotimer.Views.HeaderView
 import com.example.pomodorotimer.Views.PomodoroView
 import com.example.pomodorotimer.Views.SettingView
 
-
-
 class MainActivity : ComponentActivity() {
     private val settingDataModel by lazy { SettingDataModel(applicationContext) }
     private val viewModelFactory by lazy { ViewModelFactory.getInstance(settingDataModel) }
     private val settingViewModel by viewModels<SettingViewModel> { viewModelFactory }
-
-//    private val settingDataModel by lazy { SettingDataModel(applicationContext) }
-//    private val settingViewModel by viewModels<SettingViewModel> { ViewModelFactory.getInstance(settingDataModel) }
+    private lateinit var notificationController: NotificationController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // ContextとしてActivityを渡すのではなく、Applicationを渡す
+        notificationController = NotificationController(application)
+
         setContent {
-            PomodoroApp(settingViewModel) {
+            PomodoroApp(settingViewModel,notificationController) {
                 SettingView(settingViewModel)
-                PomodoroTimerViewModel(settingViewModel)
+                PomodoroTimerViewModel(settingViewModel,notificationController)
             }
         }
     }
 }
 
 @Composable
-fun PomodoroApp(settingViewModel: SettingViewModel,content: @Composable () -> Unit) {
+fun PomodoroApp(settingViewModel: SettingViewModel,notificationController: NotificationController,content: @Composable () -> Unit) {
     val (selectedTab, setSelectedTab) = remember { mutableStateOf(0) }
     Column(Modifier.fillMaxSize()) {
         //ヘッダー
@@ -59,7 +60,7 @@ fun PomodoroApp(settingViewModel: SettingViewModel,content: @Composable () -> Un
         //メイン
         Box(Modifier.weight(1f)) {
             when (selectedTab) {
-                0 -> PomodoroView(viewModel = PomodoroTimerViewModel(settingViewModel))
+                0 -> PomodoroView(viewModel = PomodoroTimerViewModel(settingViewModel, notificationController))
                 1 -> SettingView(viewModel = settingViewModel)
 //                2 -> HelpView(viewModel = HelpViewModel())
             }
@@ -78,8 +79,10 @@ fun MainActivityPreview() {
     val settingDataModel = remember { SettingDataModel(context) }
     val viewModelFactory = ViewModelFactory.getInstance(settingDataModel)
     val settingViewModel = viewModelFactory.create(SettingViewModel::class.java)
-    PomodoroApp(settingViewModel) {
+    val dummyNotificationController = DummyNotificationController()
+
+    PomodoroApp(settingViewModel,dummyNotificationController) {
         SettingView(settingViewModel)
-        PomodoroTimerViewModel(settingViewModel)
+        PomodoroTimerViewModel(settingViewModel,dummyNotificationController)
     }
 }
