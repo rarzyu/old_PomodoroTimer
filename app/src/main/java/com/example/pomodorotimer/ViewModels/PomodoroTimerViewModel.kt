@@ -10,9 +10,15 @@ import kotlinx.coroutines.launch
 class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notificationController: NotificationController) : ViewModel() {
 
     //ViewModelを変数に
-    private val workTime = settingViewModel.workTime * 60 * 1000L
-    private val shortBreakTime = settingViewModel.shortBreakTime * 60 * 1000L
-    private val longBreakTime = settingViewModel.longBreakTime * 60 * 1000L
+    private val _workTime = settingViewModel.workTime * 60 * 1000L
+    val workTime: Long
+        get() = _workTime
+    private val _shortBreakTime = settingViewModel.shortBreakTime * 60 * 1000L
+    val shortBreakTime: Long
+        get() = _shortBreakTime
+    private val _longBreakTime = settingViewModel.longBreakTime * 60 * 1000L
+    val longBreakTime: Long
+        get() = _longBreakTime
     private val workBreakSetCount = settingViewModel.workBreakSetCount
     private val totalSetCount = settingViewModel.totalSetCount
     private val isTimerVibration = settingViewModel.isTimerVibration
@@ -20,9 +26,9 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
 
     //タイマークラスの設定
     private val timer = TimerState(
-        workTime,
-        shortBreakTime,
-        longBreakTime,
+        _workTime,
+        _shortBreakTime,
+        _longBreakTime,
         workBreakSetCount,
         totalSetCount,
         isTimerVibration,
@@ -33,7 +39,7 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
     private val _timerState = MutableStateFlow(TimerState.TimerState.STOPPED)
     val timerState: StateFlow<TimerState.TimerState> = _timerState
 
-    private val _timeLeft = MutableStateFlow(workTime)
+    private val _timeLeft = MutableStateFlow(_workTime)
     val timeLeft: StateFlow<Long> = _timeLeft
 
     init {

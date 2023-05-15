@@ -30,8 +30,6 @@ fun SettingView(viewModel: SettingViewModel) {
         val componentHeight = remember { 60.dp }
 
         Column(Modifier.padding(16.dp)) {
-            val context = LocalContext.current
-
             NumberPickerView(
                 label = "作業時間",
                 initialValue = viewModel.workTime,
