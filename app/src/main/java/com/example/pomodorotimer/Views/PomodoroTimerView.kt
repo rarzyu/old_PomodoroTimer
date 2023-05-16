@@ -3,7 +3,6 @@ package com.example.pomodorotimer.Views
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
@@ -47,21 +46,13 @@ fun PomodoroView(viewModel: PomodoroTimerViewModel) {
             //総時間の決定
             totalTime = if (timerState == TimerState.TimerState.BREAK) {
                 //一時停止の場合、ステータスにはひとつ前のステータスを渡す
-                determineTotalTime(viewModel,previousTimerState)
+                determineTotalTime(viewModel,timerState)
             } else {
                 determineTotalTime(viewModel,timerState)
             }
-            TimerProgress(timeLeft.toFloat(), totalTime)
+            TimerProgress(timeLeft, totalTime)
 
             Spacer(modifier = Modifier.height(20.dp))
-
-            //時間
-            Text(
-                text = formatTime(timeLeft),
-                fontSize = 50.sp
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             //ボタン
             Row {
@@ -143,19 +134,45 @@ private fun determineTotalTime(viewModel: PomodoroTimerViewModel,timerState: Tim
 
 /**
  * タイマーのプログレスUI部分
- * @param remainingTime:現在時間
+ * @param timeLeft:現在時間
  * @param totalTime:総時間
  */
 @Composable
-fun TimerProgress(remainingTime: Float, totalTime: Float) {
+fun TimerProgress(timeLeft: Long, totalTime: Float) {
     val progress by animateFloatAsState(
-        targetValue = remainingTime / totalTime,
-        animationSpec = tween(durationMillis = 500)
+        targetValue = timeLeft.toFloat() / totalTime,
+        animationSpec = tween(durationMillis = 1000)
     )
 
-    CircularProgressIndicator(
-        progress = -progress,
-        Modifier.background(Color.LightGray, CircleShape)
-            .size(200.dp)
-    )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(300.dp)
+    ) {
+
+        CircularProgressIndicator(
+            progress = -progress.toFloat(),
+            strokeWidth = 200.dp,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.LightGray, CircleShape),
+            color = Color.Blue
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(150.dp)
+        ){
+            androidx.compose.foundation.Canvas(
+                modifier = Modifier.fillMaxSize(),
+                onDraw = {
+                    drawCircle(
+                        Color.White
+                    )
+                }
+            )
+            Text(
+                text = formatTime(timeLeft),
+                fontSize = 50.sp
+            )
+        }
+    }
 }

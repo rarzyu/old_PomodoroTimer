@@ -22,6 +22,7 @@ class TimerState(
     private var currentSet = 0 // 現在のセット数
     private var currentTotalSet = 0 // 現在の「全セット数」
     private var timeLeft: Long = workTime   //残り時間
+    private var pausedTimeLeft: Long = 0L //一時停止時に保持しておく残り時間
 
     //タイマーの状態
     enum class TimerState {
@@ -50,12 +51,16 @@ class TimerState(
         evacuationState = state
         state = TimerState.PAUSE
         onStateChange?.invoke(state)
+        //残り時間を保持
+        pausedTimeLeft = timeLeft
     }
 
     fun resume() {
         if (state == TimerState.PAUSE) {
             state = evacuationState
             onStateChange?.invoke(state)
+            //保持した時間から再開
+            timeLeft = pausedTimeLeft
             startTimer(timeLeft)
         }
     }
