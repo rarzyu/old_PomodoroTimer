@@ -1,12 +1,15 @@
 package com.example.pomodorotimer.ViewModels
 
+import android.os.Build
 import com.example.pomodorotimer.Common.NotificationController
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * 時計の処理
  */
-class TimerState(
+class TimerJobs(
     private val workTime: Long,
     private val shortBreakTime: Long,
     private val longBreakTime: Long,
@@ -19,10 +22,7 @@ class TimerState(
     //ローカル変数
     private var currentJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Main)
-    private var currentSet = 0 // 現在のセット数
-    private var currentTotalSet = 0 // 現在の「全セット数」
     private var timeLeft: Long = workTime   //残り時間
-    private var pausedTimeLeft: Long = 0L //一時停止時に保持しておく残り時間
 
     //タイマーの状態
     enum class TimerState {
@@ -33,8 +33,14 @@ class TimerState(
         PAUSE
     }
 
+    private val _currentSet = MutableStateFlow(1) // 現在のセット数
+    val currentSet: StateFlow<Int> = _currentSet
+
+    private val _currentTotalSet = MutableStateFlow(1) // 現在の「全セット数」
+    val currentTotalSet: StateFlow<Int> = _currentTotalSet
+
     var state: TimerState = TimerState.STOPPED  //タイマーの状態
-    var evacuationState: TimerState = TimerState.STOPPED //一時停止用の一時退避するタイマーの状態
+    var previousState: TimerState = TimerState.STOPPED //一時停止用の一時退避するタイマーの状態
     var onTick: ((Long) -> Unit)? = null
     var onStateChange: ((TimerState) -> Unit)? = null
 
@@ -48,19 +54,15 @@ class TimerState(
 
     fun pause() {
         currentJob?.cancel()
-        evacuationState = state
+        previousState = state
         state = TimerState.PAUSE
         onStateChange?.invoke(state)
-        //残り時間を保持
-        pausedTimeLeft = timeLeft
     }
 
     fun resume() {
         if (state == TimerState.PAUSE) {
-            state = evacuationState
+            state = previousState
             onStateChange?.invoke(state)
-            //保持した時間から再開
-            timeLeft = pausedTimeLeft
             startTimer(timeLeft)
         }
     }
@@ -82,13 +84,15 @@ class TimerState(
             while (System.currentTimeMillis() < endTime) {
                 timeLeft = endTime - System.currentTimeMillis()
                 onTick?.invoke(timeLeft)
-                delay(1000)
+                delay(100) //更新頻度（ミリ秒）
             }
 
             //タイマーが終了した際の処理
             //バイブ
             if (isTimerVibration) {
-                notificationController.vibrate()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    notificationController.vibrate()
+                }
             }
             //アラート
             if (isTimerAlert) {
@@ -98,20 +102,19 @@ class TimerState(
             //次のタイマーの設定
             when (state) {
                 TimerState.WORKING -> {
-                    currentSet++
-                    if (currentSet < workBreakSetCount) {
+                    if (_currentSet.value < workBreakSetCount) {
                         //休憩
                         state = TimerState.BREAK
                         timeLeft = shortBreakTime
                     } else {
-                        //長期休憩
-                        currentTotalSet++
-                        if (currentTotalSet < totalSetCount) {
+                        if (_currentTotalSet.value < totalSetCount) {
+                            //長期休憩
                             state = TimerState.LONG_BREAK
                             timeLeft = longBreakTime
-                            currentSet = 0
                         } else {
                             //全セット終了
+                            _currentSet.value = 1
+                            _currentTotalSet.value = 1
                             currentJob?.cancel()
                             state = TimerState.STOPPED
                             timeLeft = workTime
@@ -119,7 +122,14 @@ class TimerState(
                         }
                     }
                 }
-                TimerState.BREAK, TimerState.LONG_BREAK -> {
+                TimerState.BREAK -> {
+                    _currentSet.value++
+                    state = TimerState.WORKING
+                    timeLeft = workTime
+                }
+                TimerState.LONG_BREAK -> {
+                    _currentSet.value = 1 //リセット
+                    _currentTotalSet.value++
                     state = TimerState.WORKING
                     timeLeft = workTime
                 }

@@ -1,7 +1,5 @@
 package com.example.pomodorotimer.Views
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,19 +12,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pomodorotimer.ViewModels.PomodoroTimerViewModel
-import com.example.pomodorotimer.ViewModels.TimerState
+import com.example.pomodorotimer.ViewModels.TimerJobs
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun PomodoroView(viewModel: PomodoroTimerViewModel) {
     val timeLeft by viewModel.timeLeft.collectAsState()
     val timerState by viewModel.timerState.collectAsState()
-    var totalTime: Float = 0F //総時間（TimerProgress用）
-    //ひとつ前のタイマーステータス
-    var previousTimerState = timerState
+    val previousTimerState by viewModel.previousTimerState.collectAsState() //ひとつ前のステータス
+    val currentSet by viewModel.currentSet.collectAsState()
+    val currentTotalSet by viewModel.currentTotalSet.collectAsState()
+    var totalTime = 0L //総時間（TimerProgress用）
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -34,37 +34,52 @@ fun PomodoroView(viewModel: PomodoroTimerViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            //ステータス
+            //ステータスやセット数
+            val currentSetText = "作業と休憩のセット：" + currentSet + "セット目"
+            val currentTotalSetText = "全セット：" + currentTotalSet + "セット目"
+
             Text(
-                text = timerState.toString(),
-                fontSize = 50.sp
+                text = determineTimerStateString(timerState) ,
+                textAlign = TextAlign.Center,
+                fontSize = 40.sp
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = currentSetText,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp
+            )
+            Text(
+                text = currentTotalSetText ,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             //プログレスタイマー
             //総時間の決定
-            totalTime = if (timerState == TimerState.TimerState.BREAK) {
+            totalTime = if (timerState == TimerJobs.TimerState.PAUSE) {
                 //一時停止の場合、ステータスにはひとつ前のステータスを渡す
-                determineTotalTime(viewModel,timerState)
+                determineTotalTime(viewModel,previousTimerState)
             } else {
                 determineTotalTime(viewModel,timerState)
             }
             TimerProgress(timeLeft, totalTime)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             //ボタン
             Row {
                 when (timerState) {
                     //停止状態
-                    TimerState.TimerState.STOPPED -> {
+                    TimerJobs.TimerState.STOPPED -> {
                         Button(onClick = { viewModel.start() }) {
                             Text("スタート")
                         }
                     }
                     //一時停止状態
-                    TimerState.TimerState.PAUSE -> {
+                    TimerJobs.TimerState.PAUSE -> {
                         Button(onClick = { viewModel.resume() }) {
                             Text("再開")
                         }
@@ -76,12 +91,8 @@ fun PomodoroView(viewModel: PomodoroTimerViewModel) {
                         }
                     }
                     //動作中（作業・休憩問わず）
-                    TimerState.TimerState.WORKING, TimerState.TimerState.BREAK, TimerState.TimerState.LONG_BREAK -> {
-                        Button(onClick = {
-                            //ひとつ前のステータスを更新
-                            previousTimerState = timerState
-                            viewModel.pause()
-                        }) {
+                    TimerJobs.TimerState.WORKING, TimerJobs.TimerState.BREAK, TimerJobs.TimerState.LONG_BREAK -> {
+                        Button(onClick = { viewModel.pause() }) {
                             Text("一時停止")
                         }
 
@@ -113,23 +124,51 @@ private fun formatTime(millis: Long): String {
  * パラメータはそのまま渡しているだけ
  * ※ただし、ステータスがBREAKの時は、ひとつ前のステータスを引数に渡す
  */
-private fun determineTotalTime(viewModel: PomodoroTimerViewModel,timerState: TimerState.TimerState): Float {
+private fun determineTotalTime(viewModel: PomodoroTimerViewModel,timerState: TimerJobs.TimerState): Long {
     var result: Long = 0
 
     when (timerState) {
         //停止時・作業中の場合は作業時間
-        TimerState.TimerState.STOPPED,TimerState.TimerState.WORKING -> {
+        TimerJobs.TimerState.STOPPED,TimerJobs.TimerState.WORKING -> {
             result = viewModel.workTime
         }
-        TimerState.TimerState.BREAK -> {
+        TimerJobs.TimerState.BREAK -> {
             result = viewModel.shortBreakTime
         }
-        TimerState.TimerState.LONG_BREAK -> {
+        TimerJobs.TimerState.LONG_BREAK -> {
             result = viewModel.longBreakTime
         }
     }
 
-    return result.toFloat()
+    return result
+}
+
+/**
+ * ステータスから表示する文字を求める
+ * @param
+ */
+private fun determineTimerStateString(timerState: TimerJobs.TimerState): String{
+    var result = ""
+
+    when(timerState){
+        TimerJobs.TimerState.STOPPED -> {
+            result = "さぁ、はじめよう"
+        }
+        TimerJobs.TimerState.WORKING -> {
+            result = "作業中"
+        }
+        TimerJobs.TimerState.BREAK -> {
+            result = "休憩中"
+        }
+        TimerJobs.TimerState.LONG_BREAK -> {
+            result = "休憩中（長期）"
+        }
+        TimerJobs.TimerState.PAUSE -> {
+            result = "一時停止"
+        }
+    }
+
+    return result
 }
 
 /**
@@ -138,11 +177,13 @@ private fun determineTotalTime(viewModel: PomodoroTimerViewModel,timerState: Tim
  * @param totalTime:総時間
  */
 @Composable
-fun TimerProgress(timeLeft: Long, totalTime: Float) {
-    val progress by animateFloatAsState(
-        targetValue = timeLeft.toFloat() / totalTime,
-        animationSpec = tween(durationMillis = 1000)
-    )
+fun TimerProgress(timeLeft: Long, totalTime: Long) {
+//    val progress by animateFloatAsState(
+//        targetValue = timeLeft.toFloat() / totalTime.toFloat(),
+//        animationSpec = tween(durationMillis = 100)
+//    )
+
+    var progress = timeLeft.toFloat() / totalTime.toFloat()
 
     Box(
         contentAlignment = Alignment.Center,
@@ -150,7 +191,7 @@ fun TimerProgress(timeLeft: Long, totalTime: Float) {
     ) {
 
         CircularProgressIndicator(
-            progress = -progress.toFloat(),
+            progress = -progress, //時計回り
             strokeWidth = 200.dp,
             modifier = Modifier
                 .fillMaxSize()

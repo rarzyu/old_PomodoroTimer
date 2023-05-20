@@ -25,7 +25,7 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
     private val isTimerAlert = settingViewModel.isTimerAlert
 
     //タイマークラスの設定
-    private val timer = TimerState(
+    private val timer = TimerJobs(
         _workTime,
         _shortBreakTime,
         _longBreakTime,
@@ -36,11 +36,21 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
         notificationController
     )
 
-    private val _timerState = MutableStateFlow(TimerState.TimerState.STOPPED)
-    val timerState: StateFlow<TimerState.TimerState> = _timerState
-
+    //監視する変数たち
     private val _timeLeft = MutableStateFlow(_workTime)
     val timeLeft: StateFlow<Long> = _timeLeft
+
+    private val _timerState = MutableStateFlow(TimerJobs.TimerState.STOPPED)
+    val timerState: StateFlow<TimerJobs.TimerState> = _timerState
+
+    private val _previousTimerState = MutableStateFlow(TimerJobs.TimerState.STOPPED)
+    val previousTimerState: StateFlow<TimerJobs.TimerState> = _previousTimerState
+
+    private val _currentSet = MutableStateFlow(1)
+    val currentSet: StateFlow<Int> = _currentSet
+
+    private val _currentTotalSet = MutableStateFlow(1)
+    val currentTotalSet: StateFlow<Int> = _currentTotalSet
 
     init {
         timer.onTick = { remainingTime ->
@@ -53,6 +63,10 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
             viewModelScope.launch {
                 _timerState.emit(newState)
             }
+        }
+        viewModelScope.launch {
+            timer.currentSet.collect { _currentSet.value = it }
+            timer.currentTotalSet.collect { _currentTotalSet.value = it }
         }
     }
 
