@@ -66,6 +66,8 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
         }
         viewModelScope.launch {
             timer.currentSet.collect { _currentSet.value = it }
+        }
+        viewModelScope.launch {
             timer.currentTotalSet.collect { _currentTotalSet.value = it }
         }
     }

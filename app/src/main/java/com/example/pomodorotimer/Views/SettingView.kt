@@ -1,6 +1,7 @@
 package com.example.pomodorotimer.Views
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,16 +15,42 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.pomodorotimer.ViewModels.SettingViewModel
 
 @Composable
 fun SettingView(viewModel: SettingViewModel) {
+    val numberTextFieldErrAlert = remember { mutableStateOf(false) }
+    val numberErrAlertText = remember { mutableStateOf("") }
+
+    //入力値がエラーの場合はアラートを出す
+    if (numberTextFieldErrAlert.value){
+        AlertDialog(
+            onDismissRequest = { numberTextFieldErrAlert.value = false },
+            title = {
+                Text(
+                    text = "エラー",
+                    fontSize = 20.sp
+                )},
+            text = {
+                Text(
+                    text = numberErrAlertText.value,
+                    fontSize = 14.sp
+                ) },
+            confirmButton = {
+                Button(onClick = { numberTextFieldErrAlert.value = false }) {
+                    Text("OK")
+                    Alignment.Center
+                }
+            }
+        )
+    }
 
     BoxWithConstraints() {
         val labelWidth = remember { maxWidth * 0.45f }
@@ -35,6 +62,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 initialValue = viewModel.workTime,
                 range = 1..120,
                 onValueChange = { viewModel.workTime = it },
+                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -43,6 +71,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 initialValue = viewModel.shortBreakTime,
                 range = 1..60,
                 onValueChange = { viewModel.shortBreakTime = it },
+                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -51,6 +80,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 initialValue = viewModel.longBreakTime,
                 range = 1..180,
                 onValueChange = { viewModel.longBreakTime = it },
+                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -59,6 +89,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 initialValue = viewModel.workBreakSetCount,
                 range = 1..20,
                 onValueChange = { viewModel.workBreakSetCount = it },
+                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -67,6 +98,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 initialValue = viewModel.totalSetCount,
                 range = 1..20,
                 onValueChange = { viewModel.totalSetCount = it },
+                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
@@ -94,6 +126,7 @@ fun NumberPickerView(
     initialValue: Int,
     range: IntRange,
     onValueChange: (Int) -> Unit,
+    onValueError: (String) -> Unit,
     labelWidth: Dp,
     componentHeight: Dp
 ) {
@@ -115,11 +148,32 @@ fun NumberPickerView(
 
         TextField(
             value = textFieldValue.value.toString(),
-            onValueChange = {
-                val intValue = it.toInt()
-                textFieldValue.value = intValue
-                onValueChange(intValue)
+            onValueChange = { input ->
+                //変換した入力値：空の時はデフォルトとして1を設定
+                val inputValue = if(input.isEmpty()) 1 else input.toInt()
+                //数値かどうかのチェック結果：全削除している時は1がデフォルトで返るので何もしない
+                val isIntValue = if(input.toIntOrNull() == null) input.isEmpty() else true
+                //範囲内かどうかのチェック結果
+                val hasNumberRange = inputValue >= range.first && inputValue <= range.last
+
+                //範囲外・数値以外の時はアラート
+                if (hasNumberRange && isIntValue){
+                    textFieldValue.value = inputValue
+                    onValueChange(inputValue)
+                } else {
+                    val errText = if (!isIntValue) {
+                        //数値以外の場合
+                        "数値を入力して下さい。"
+                    } else {
+                        //入力範囲外の場合
+                        "入力した値が範囲外です。\n" +
+                            "最小値：" + range.first + "\n" +
+                            "最大値：" + range.last
+                    }
+                    onValueError(errText)
+                }
             },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),  //数値のみ入力
             singleLine = true,
             modifier = Modifier
                 .weight(1f)
@@ -189,7 +243,10 @@ fun SwitchView(
     }
 }
 
-fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
+/**
+ * 下線の定義
+ */
+private fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
     factory = {
         val density = LocalDensity.current
         val strokeWidthPx = density.run { strokeWidth.toPx() }

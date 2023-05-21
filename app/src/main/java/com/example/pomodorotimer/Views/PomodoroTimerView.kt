@@ -178,11 +178,6 @@ private fun determineTimerStateString(timerState: TimerJobs.TimerState): String{
  */
 @Composable
 fun TimerProgress(timeLeft: Long, totalTime: Long) {
-//    val progress by animateFloatAsState(
-//        targetValue = timeLeft.toFloat() / totalTime.toFloat(),
-//        animationSpec = tween(durationMillis = 100)
-//    )
-
     var progress = timeLeft.toFloat() / totalTime.toFloat()
 
     Box(
