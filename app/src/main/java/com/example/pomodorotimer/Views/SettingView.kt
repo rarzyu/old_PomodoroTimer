@@ -61,7 +61,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 label = "作業時間",
                 initialValue = viewModel.workTime,
                 range = 1..120,
-                onValueChange = { viewModel.workTime = it },
+                onValueChange = { viewModel.updateWorkTime(it) },
                 onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
@@ -70,7 +70,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 label = "休憩時間",
                 initialValue = viewModel.shortBreakTime,
                 range = 1..60,
-                onValueChange = { viewModel.shortBreakTime = it },
+                onValueChange = { viewModel.updateShortBreakTime(it) },
                 onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
@@ -79,7 +79,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 label = "休憩時間（長）",
                 initialValue = viewModel.longBreakTime,
                 range = 1..180,
-                onValueChange = { viewModel.longBreakTime = it },
+                onValueChange = { viewModel.updateLongBreakTime(it) },
                 onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
@@ -88,7 +88,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 label = "作業と休憩のセット数",
                 initialValue = viewModel.workBreakSetCount,
                 range = 1..20,
-                onValueChange = { viewModel.workBreakSetCount = it },
+                onValueChange = { viewModel.updateWorkBreakSetCount(it) },
                 onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
@@ -97,7 +97,7 @@ fun SettingView(viewModel: SettingViewModel) {
                 label = "全てのセット数",
                 initialValue = viewModel.totalSetCount,
                 range = 1..20,
-                onValueChange = { viewModel.totalSetCount = it },
+                onValueChange = { viewModel.updateTotalSetCount(it) },
                 onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
@@ -105,14 +105,14 @@ fun SettingView(viewModel: SettingViewModel) {
             SwitchView(
                 label = "タイマー終了時のバイブ",
                 isChecked = viewModel.isTimerVibration,
-                onCheckedChange = { viewModel.setIsTimerVibration(it) },
+                onCheckedChange = { viewModel.updateIsTimerVibration(it) },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )
             SwitchView(
                 label = "タイマー終了時のアラート",
                 isChecked = viewModel.isTimerAlert,
-                onCheckedChange = { viewModel.setIsTimerAlert(it) },
+                onCheckedChange = { viewModel.updateIsTimerAlert(it) },
                 labelWidth = labelWidth,
                 componentHeight = componentHeight
             )

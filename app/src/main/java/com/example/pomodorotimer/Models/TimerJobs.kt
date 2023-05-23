@@ -46,9 +46,11 @@ class TimerJobs(
 
     fun start() {
         if (state == TimerState.STOPPED) {
-            state = TimerState.WORKING
-            onStateChange?.invoke(state)
-            startTimer(workTime)
+            currentJob = CoroutineScope(Dispatchers.Main).launch{
+                state = TimerState.WORKING
+                onStateChange?.invoke(state)
+                startTimer(workTime)
+            }
         }
     }
 

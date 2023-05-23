@@ -1,6 +1,8 @@
 package com.example.pomodorotimer.ViewModels
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.pomodorotimer.Models.SettingDataModel
 
@@ -18,47 +20,43 @@ class SettingViewModel(private val settingDataModel: SettingDataModel) : ViewMod
     private val isTimerAlertKey = settingDataModel.isTimerAlertKey
 
     //各設定の値
-    var workTime = settingDataModel.getWorkTime()
-        set(value) {
-            field = value
-            settingDataModel.setSettingInt(workTimeKey, value)
-        }
-    var shortBreakTime = settingDataModel.getShortBreakTime()
-        set(value) {
-            field = value
-            settingDataModel.setSettingInt(shortBreakTimeKey, value)
-        }
-    var longBreakTime = settingDataModel.getLongBreakTime()
-        set(value) {
-            field = value
-            settingDataModel.setSettingInt(longBreakTimeKey, value)
-        }
-    var workBreakSetCount = settingDataModel.getWorkBreakSetCount()
-        set(value) {
-            field = value
-            settingDataModel.setSettingInt(workBreakSetCountKey, value)
-        }
-    var totalSetCount = settingDataModel.getTotalSetCount()
-        set(value) {
-            field = value
-            settingDataModel.setSettingInt(totalSetCountKey, value)
-        }
-    private var _isTimerVibration = mutableStateOf(settingDataModel.getTimerVibration())
-    val isTimerVibration: Boolean
-        get() = _isTimerVibration.value
+    var workTime by mutableStateOf(settingDataModel.getWorkTime())
+    var shortBreakTime by mutableStateOf(settingDataModel.getShortBreakTime())
+    var longBreakTime by mutableStateOf(settingDataModel.getLongBreakTime())
+    var workBreakSetCount by mutableStateOf(settingDataModel.getWorkBreakSetCount())
+    var totalSetCount by mutableStateOf(settingDataModel.getTotalSetCount())
+    var isTimerVibration by mutableStateOf(settingDataModel.getTimerVibration())
+    var isTimerAlert by mutableStateOf(settingDataModel.getTimerAlert())
 
-    fun setIsTimerVibration(value: Boolean) {
-        _isTimerVibration.value = value
-        settingDataModel.setSettingBoolean(isTimerVibrationKey, value)
+    //更新処理：set変数名はKotlinが自動生成するので使用不可
+    fun updateWorkTime(value: Int) {
+        workTime = value
+        settingDataModel.setSettingInt(workTimeKey,value)
+    }
+    fun updateShortBreakTime(value: Int) {
+        shortBreakTime = value
+        settingDataModel.setSettingInt(shortBreakTimeKey,value)
+    }
+    fun updateLongBreakTime(value: Int) {
+        longBreakTime = value
+        settingDataModel.setSettingInt(longBreakTimeKey,value)
+    }
+    fun updateWorkBreakSetCount(value: Int) {
+        workBreakSetCount = value
+        settingDataModel.setSettingInt(workBreakSetCountKey,value)
+    }
+    fun updateTotalSetCount(value: Int) {
+        totalSetCount = value
+        settingDataModel.setSettingInt(totalSetCountKey,value)
+    }
+    fun updateIsTimerVibration(value: Boolean) {
+        isTimerVibration = value
+        settingDataModel.setSettingBoolean(isTimerVibrationKey,value)
+    }
+    fun updateIsTimerAlert(value: Boolean) {
+        isTimerAlert = value
+        settingDataModel.setSettingBoolean(isTimerAlertKey,value)
     }
 
-    private var _isTimerAlert = mutableStateOf(settingDataModel.getTimerAlert())
-    val isTimerAlert: Boolean
-        get() = _isTimerAlert.value
-
-    fun setIsTimerAlert(value: Boolean) {
-        _isTimerAlert.value = value
-        settingDataModel.setSettingBoolean(isTimerAlertKey, value)
-    }
 
 }

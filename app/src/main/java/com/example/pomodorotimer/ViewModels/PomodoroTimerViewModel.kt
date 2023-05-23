@@ -1,34 +1,35 @@
 package com.example.pomodorotimer.ViewModels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pomodorotimer.Common.NotificationController
+import com.example.pomodorotimer.Models.SettingDataModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notificationController: NotificationController) : ViewModel() {
+class PomodoroTimerViewModel(
+    private val settingDataModel: SettingDataModel,
+    notificationController: NotificationController
+) : ViewModel() {
 
     //ViewModelを変数に
-    private val _workTime = settingViewModel.workTime * 60 * 1000L
-    val workTime: Long
-        get() = _workTime
-    private val _shortBreakTime = settingViewModel.shortBreakTime * 60 * 1000L
-    val shortBreakTime: Long
-        get() = _shortBreakTime
-    private val _longBreakTime = settingViewModel.longBreakTime * 60 * 1000L
-    val longBreakTime: Long
-        get() = _longBreakTime
-    private val workBreakSetCount = settingViewModel.workBreakSetCount
-    private val totalSetCount = settingViewModel.totalSetCount
-    private val isTimerVibration = settingViewModel.isTimerVibration
-    private val isTimerAlert = settingViewModel.isTimerAlert
+    var workTime by mutableStateOf(settingDataModel.getWorkTime() * 60 * 1000L)
+    var shortBreakTime by mutableStateOf(settingDataModel.getShortBreakTime() * 60 * 1000L)
+    var longBreakTime by mutableStateOf(settingDataModel.getLongBreakTime() * 60 * 1000L)
+    var workBreakSetCount by mutableStateOf(settingDataModel.getWorkBreakSetCount())
+    var totalSetCount by mutableStateOf(settingDataModel.getTotalSetCount())
+    var isTimerVibration by mutableStateOf(settingDataModel.getTimerVibration())
+    var isTimerAlert by mutableStateOf(settingDataModel.getTimerAlert())
 
     //タイマークラスの設定
-    private val timer = TimerJobs(
-        _workTime,
-        _shortBreakTime,
-        _longBreakTime,
+    private var timer = TimerJobs(
+        workTime,
+        shortBreakTime,
+        longBreakTime,
         workBreakSetCount,
         totalSetCount,
         isTimerVibration,
@@ -37,7 +38,7 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
     )
 
     //監視する変数たち
-    private val _timeLeft = MutableStateFlow(_workTime)
+    private val _timeLeft = MutableStateFlow(workTime)
     val timeLeft: StateFlow<Long> = _timeLeft
 
     private val _timerState = MutableStateFlow(TimerJobs.TimerState.STOPPED)
@@ -58,7 +59,6 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
                 _timeLeft.emit(remainingTime)
             }
         }
-
         timer.onStateChange = { newState ->
             viewModelScope.launch {
                 _timerState.emit(newState)
@@ -72,8 +72,26 @@ class PomodoroTimerViewModel(private val settingViewModel:SettingViewModel,notif
         }
     }
 
-    fun start() = timer.start()
+    fun start() {
+        //スタート前に更新する
+        updateSettings()
+        timer.start()
+    }
     fun pause() = timer.pause()
     fun resume() = timer.resume()
     fun reset() = timer.reset()
+
+    /**
+     *設定情報の更新時に行う処理
+     */
+    private fun updateSettings() {
+        workTime = settingDataModel.getWorkTime() * 60 * 1000L
+        shortBreakTime = settingDataModel.getShortBreakTime() * 60 * 1000L
+        longBreakTime = settingDataModel.getLongBreakTime() * 60 * 1000L
+        workBreakSetCount = settingDataModel.getWorkBreakSetCount()
+        totalSetCount = settingDataModel.getTotalSetCount()
+        isTimerVibration = settingDataModel.getTimerVibration()
+        isTimerAlert = settingDataModel.getTimerAlert()
+    }
+
 }

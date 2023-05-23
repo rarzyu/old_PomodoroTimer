@@ -36,16 +36,16 @@ class MainActivity : ComponentActivity() {
         notificationController = NotificationController(application)
 
         setContent {
-            PomodoroApp(settingViewModel,notificationController) {
+            PomodoroApp(settingViewModel,settingDataModel,notificationController) {
                 SettingView(settingViewModel)
-                PomodoroTimerViewModel(settingViewModel,notificationController)
+                PomodoroTimerViewModel(settingDataModel,notificationController)
             }
         }
     }
 }
 
 @Composable
-fun PomodoroApp(settingViewModel: SettingViewModel,notificationController: NotificationController,content: @Composable () -> Unit) {
+fun PomodoroApp(settingViewModel: SettingViewModel,settingDataModel: SettingDataModel,notificationController: NotificationController,content: @Composable () -> Unit) {
     val (selectedTab, setSelectedTab) = remember { mutableStateOf(0) }
     Column(Modifier.fillMaxSize()) {
         //ヘッダー
@@ -60,7 +60,7 @@ fun PomodoroApp(settingViewModel: SettingViewModel,notificationController: Notif
         //メイン
         Box(Modifier.weight(1f)) {
             when (selectedTab) {
-                0 -> PomodoroView(viewModel = PomodoroTimerViewModel(settingViewModel, notificationController))
+                0 -> PomodoroView(viewModel = PomodoroTimerViewModel(settingDataModel, notificationController))
                 1 -> SettingView(viewModel = settingViewModel)
 //                2 -> HelpView(viewModel = HelpViewModel())
             }
@@ -81,8 +81,8 @@ fun MainActivityPreview() {
     val settingViewModel = viewModelFactory.create(SettingViewModel::class.java)
     val dummyNotificationController = DummyNotificationController()
 
-    PomodoroApp(settingViewModel,dummyNotificationController) {
+    PomodoroApp(settingViewModel,settingDataModel,dummyNotificationController) {
         SettingView(settingViewModel)
-        PomodoroTimerViewModel(settingViewModel,dummyNotificationController)
+        PomodoroTimerViewModel(settingDataModel,dummyNotificationController)
     }
 }

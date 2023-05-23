@@ -1,6 +1,8 @@
 package com.example.pomodorotimer.Models
 
 import android.content.Context
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * 設定のデータ管理
@@ -18,37 +20,53 @@ class SettingDataModel(private val context: Context) {
     val isTimerVibrationKey = "isTimerVibration"
     val isTimerAlertKey = "isTimerAlert"
 
-    //作業時間
+    //監視可能な値
+    private val _workTime = MutableStateFlow(getWorkTime())
+    val workTime: StateFlow<Int> = _workTime
+
+    private val _shortBreakTime = MutableStateFlow(getShortBreakTime())
+    val shortBreakTime: StateFlow<Int> = _shortBreakTime
+
+    private val _longBreakTime = MutableStateFlow(getLongBreakTime())
+    val longBreakTime: StateFlow<Int> = _longBreakTime
+
+    private val _workBreakSetCount = MutableStateFlow(getWorkBreakSetCount())
+    val workBreakSetCount: StateFlow<Int> = _workBreakSetCount
+
+    private val _totalSetCount = MutableStateFlow(getTotalSetCount())
+    val totalSetCount: StateFlow<Int> = _totalSetCount
+
+    private val _isTimerVibration = MutableStateFlow(getTimerVibration())
+    val isTimerVibration: StateFlow<Boolean> = _isTimerVibration
+
+    private val _isTimerAlert = MutableStateFlow(getTimerAlert())
+    val isTimerAlert: StateFlow<Boolean> = _isTimerAlert
+
+    //アプリ内に保存したデータから取得する
     fun getWorkTime():Int {
       return sharedPreferences.getInt(workTimeKey, 25)
     }
 
-    //休憩時間
     fun getShortBreakTime():Int {
         return sharedPreferences.getInt(shortBreakTimeKey,5)
     }
 
-    //休憩時間（長）
     fun getLongBreakTime():Int {
         return sharedPreferences.getInt(longBreakTimeKey,30)
     }
 
-    //作業と休憩のセット数
     fun getWorkBreakSetCount():Int {
         return sharedPreferences.getInt(workBreakSetCountKey,4)
     }
 
-    //全てのセット数
     fun getTotalSetCount():Int {
         return sharedPreferences.getInt(totalSetCountKey,3)
     }
 
-    //タイマー終了時のバイブ
     fun getTimerVibration():Boolean {
         return sharedPreferences.getBoolean(isTimerVibrationKey,true)
     }
 
-    //タイマー終了時のアラート
     fun getTimerAlert():Boolean {
         return sharedPreferences.getBoolean(isTimerAlertKey,true)
     }
@@ -58,7 +76,7 @@ class SettingDataModel(private val context: Context) {
      * @param key：保存先のKey値
      * @param value：保存する値
      */
-    fun setSettingInt(key:String,value:Int){
+    fun setSettingInt(key:String, value: Int){
         sharedPreferences.edit().putInt(key,value).apply()
     }
 
