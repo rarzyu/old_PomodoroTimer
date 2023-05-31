@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pomodorotimer.Common.AdBanner
 import com.example.pomodorotimer.ViewModels.PomodoroTimerViewModel
 import com.example.pomodorotimer.ViewModels.TimerJobs
 import java.util.concurrent.TimeUnit
@@ -29,6 +30,9 @@ fun PomodoroView(viewModel: PomodoroTimerViewModel) {
     var totalTime = 0L //総時間（TimerProgress用）
 
     Box(modifier = Modifier.fillMaxSize()) {
+        //広告
+        AdBanner(Modifier.align(Alignment.TopCenter))
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
