@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rarzyu.pomodorotimer.Common.AdBanner
 import com.rarzyu.pomodorotimer.ViewModels.SettingViewModel
 
 @Composable
@@ -51,72 +52,77 @@ fun SettingView(viewModel: SettingViewModel) {
             }
         )
     }
+    Box(modifier = Modifier.fillMaxHeight()) {
+        BoxWithConstraints() {
+            val labelWidth = remember { maxWidth * 0.45f }
+            val componentHeight = remember { 60.dp }
 
-    BoxWithConstraints() {
-        val labelWidth = remember { maxWidth * 0.45f }
-        val componentHeight = remember { 60.dp }
-
-        Column(Modifier.padding(16.dp)) {
-            NumberPickerView(
-                label = "作業時間",
-                initialValue = viewModel.workTime,
-                range = 1..120,
-                onValueChange = { viewModel.updateWorkTime(it) },
-                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            NumberPickerView(
-                label = "休憩時間",
-                initialValue = viewModel.shortBreakTime,
-                range = 1..60,
-                onValueChange = { viewModel.updateShortBreakTime(it) },
-                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            NumberPickerView(
-                label = "休憩時間（長）",
-                initialValue = viewModel.longBreakTime,
-                range = 1..180,
-                onValueChange = { viewModel.updateLongBreakTime(it) },
-                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            NumberPickerView(
-                label = "作業と休憩のセット数",
-                initialValue = viewModel.workBreakSetCount,
-                range = 1..20,
-                onValueChange = { viewModel.updateWorkBreakSetCount(it) },
-                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            NumberPickerView(
-                label = "全てのセット数",
-                initialValue = viewModel.totalSetCount,
-                range = 1..20,
-                onValueChange = { viewModel.updateTotalSetCount(it) },
-                onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            SwitchView(
-                label = "タイマー終了時のバイブ",
-                isChecked = viewModel.isTimerVibration,
-                onCheckedChange = { viewModel.updateIsTimerVibration(it) },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
-            SwitchView(
-                label = "タイマー終了時のアラート",
-                isChecked = viewModel.isTimerAlert,
-                onCheckedChange = { viewModel.updateIsTimerAlert(it) },
-                labelWidth = labelWidth,
-                componentHeight = componentHeight
-            )
+            Column(
+                Modifier.padding(16.dp)
+            ) {
+                NumberPickerView(
+                    label = "作業時間",
+                    initialValue = viewModel.workTime,
+                    range = 1..120,
+                    onValueChange = { viewModel.updateWorkTime(it) },
+                    onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                NumberPickerView(
+                    label = "休憩時間",
+                    initialValue = viewModel.shortBreakTime,
+                    range = 1..60,
+                    onValueChange = { viewModel.updateShortBreakTime(it) },
+                    onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                NumberPickerView(
+                    label = "休憩時間（長）",
+                    initialValue = viewModel.longBreakTime,
+                    range = 1..180,
+                    onValueChange = { viewModel.updateLongBreakTime(it) },
+                    onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                NumberPickerView(
+                    label = "作業と休憩のセット数",
+                    initialValue = viewModel.workBreakSetCount,
+                    range = 1..20,
+                    onValueChange = { viewModel.updateWorkBreakSetCount(it) },
+                    onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                NumberPickerView(
+                    label = "全てのセット数",
+                    initialValue = viewModel.totalSetCount,
+                    range = 1..20,
+                    onValueChange = { viewModel.updateTotalSetCount(it) },
+                    onValueError = { numberErrAlertText.value = it; numberTextFieldErrAlert.value = true },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                SwitchView(
+                    label = "タイマー終了時のバイブ",
+                    isChecked = viewModel.isTimerVibration,
+                    onCheckedChange = { viewModel.updateIsTimerVibration(it) },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+                SwitchView(
+                    label = "タイマー終了時のアラート",
+                    isChecked = viewModel.isTimerAlert,
+                    onCheckedChange = { viewModel.updateIsTimerAlert(it) },
+                    labelWidth = labelWidth,
+                    componentHeight = componentHeight
+                )
+            }
         }
+        //広告
+        AdBanner(Modifier.align(Alignment.BottomCenter))
     }
 }
 

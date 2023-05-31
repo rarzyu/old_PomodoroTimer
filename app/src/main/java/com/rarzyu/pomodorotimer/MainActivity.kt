@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // ContextとしてActivityを渡すのではなく、Applicationを渡す
         notificationController = NotificationController(application)
 
