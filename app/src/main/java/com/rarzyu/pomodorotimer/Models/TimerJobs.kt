@@ -86,7 +86,7 @@ class TimerJobs(
             while (System.currentTimeMillis() < endTime) {
                 timeLeft = endTime - System.currentTimeMillis()
                 onTick?.invoke(timeLeft)
-                delay(100) //更新頻度（ミリ秒）
+                delay(5) //更新頻度（ミリ秒）
             }
 
             //タイマーが終了した際の処理
